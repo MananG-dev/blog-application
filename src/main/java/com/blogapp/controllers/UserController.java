@@ -3,6 +3,7 @@ package com.blogapp.controllers;
 import com.blogapp.payloads.ApiResponse;
 import com.blogapp.payloads.UserDto;
 import com.blogapp.services.impl.UserServiceImpl;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class UserController {
 
     // POST - create User
     @PostMapping("/")
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
         UserDto userDto1 = userService.createUser(userDto);
         return new ResponseEntity<UserDto>(userDto1, HttpStatus.CREATED);
     }
