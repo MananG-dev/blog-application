@@ -1,17 +1,16 @@
 package com.blogapp.exceptions;
 
 import com.blogapp.payloads.ApiResponse;
-import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -23,11 +22,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> methodArgumentNotValidException(MethodArgumentNotValidException methodArgumentNotValidException) {
-        ApiResponse apiResponse = ApiResponse.builder()
-                .message(methodArgumentNotValidException.getMessage())
-                .status(false)
-                .build();
-        return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+    public ResponseEntity<Map<String, String>> methodArgumentNotValidException(MethodArgumentNotValidException methodArgumentNotValidException) {
+        Map<String, String> resp = new HashMap<>();
+        methodArgumentNotValidException.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String message = error.getDefaultMessage();
+            resp.put(fieldName, message);
+        });
+
+        return new ResponseEntity<>(resp, HttpStatus.BAD_REQUEST);
     }
 }
