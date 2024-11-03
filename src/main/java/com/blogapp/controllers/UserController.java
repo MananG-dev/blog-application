@@ -1,5 +1,6 @@
 package com.blogapp.controllers;
 
+import com.blogapp.payloads.ApiResponse;
 import com.blogapp.payloads.UserDto;
 import com.blogapp.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +46,8 @@ public class UserController {
 
     // DELETE - delete user
     @DeleteMapping("/{userID}")
-    public ResponseEntity<?> deleteUser(@PathVariable(name = "userID") Integer uid) {
+    public ResponseEntity<ApiResponse> deleteUser(@PathVariable(name = "userID") Integer uid) {
         userService.deleteUser(uid);
-        return new ResponseEntity<>("Deleted", HttpStatus.OK);
+        return new ResponseEntity<ApiResponse>(new ApiResponse("User Deleted Successfully", true), HttpStatus.OK);
     }
 }
