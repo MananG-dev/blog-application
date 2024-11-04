@@ -3,6 +3,8 @@ package com.blogapp.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name="categories")
 @NoArgsConstructor
@@ -18,4 +20,7 @@ public class Category {
     private String categoryTitle;
     @Column(name="description")
     private String categoryDescription;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Post> posts;
 }
