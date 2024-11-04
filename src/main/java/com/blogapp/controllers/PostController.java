@@ -3,6 +3,7 @@ package com.blogapp.controllers;
 import com.blogapp.entities.Post;
 import com.blogapp.payloads.ApiResponse;
 import com.blogapp.payloads.PostDto;
+import com.blogapp.payloads.PostPaginationResponse;
 import com.blogapp.services.impl.PostServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -74,12 +75,12 @@ public class PostController {
 
     //get - get post by page
     @GetMapping("/posts")
-    public ResponseEntity<List<PostDto>> getPostByPage(
-            @RequestParam(value = "pageNumber", defaultValue = "1", required = false) Integer pageNumber,
+    public ResponseEntity<PostPaginationResponse> getPostByPage(
+            @RequestParam(value = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize
     )   {
-        List<PostDto> postDtos = postService.getPostByPagination(pageNumber, pageSize);
-        return new ResponseEntity<>(postDtos, HttpStatus.OK);
+        PostPaginationResponse paginationResponse = postService.getPostByPagination(pageNumber, pageSize);
+        return new ResponseEntity<>(paginationResponse, HttpStatus.OK);
     }
 
     //get - search post by keyword.

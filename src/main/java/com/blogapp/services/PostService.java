@@ -2,6 +2,7 @@ package com.blogapp.services;
 
 import com.blogapp.entities.Post;
 import com.blogapp.payloads.PostDto;
+import com.blogapp.payloads.PostPaginationResponse;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public interface PostService {
     // get all posts
     List<PostDto> getAllPost();
     // get posts based on pagination
-    List<PostDto> getPostByPagination(Integer pageNumber, Integer pageSize);
+    PostPaginationResponse getPostByPagination(Integer pageNumber, Integer pageSize);
     //search post
     List<PostDto> searchPosts(String keyword);
 }

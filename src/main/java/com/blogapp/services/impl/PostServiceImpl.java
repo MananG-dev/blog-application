@@ -6,6 +6,7 @@ import com.blogapp.entities.User;
 import com.blogapp.exceptions.ResourceNotFoundException;
 import com.blogapp.payloads.CategoryDto;
 import com.blogapp.payloads.PostDto;
+import com.blogapp.payloads.PostPaginationResponse;
 import com.blogapp.payloads.UserDto;
 import com.blogapp.repositories.CategoryRepository;
 import com.blogapp.repositories.PostRepositories;
@@ -84,12 +85,20 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getPostByPagination(Integer pageNumber, Integer pageSize) {
+    public PostPaginationResponse getPostByPagination(Integer pageNumber, Integer pageSize) {
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
         Page<Post> pagePost = postRepositories.findAll(pageRequest);
         List<Post> postList = pagePost.getContent();
         List<PostDto> postDtos = postList.stream().map((p) -> this.postToPostDto(p)).toList();
-        return postDtos;
+        PostPaginationResponse postPaginationResponse = PostPaginationResponse.builder()
+                .pageNumber(pagePost.getNumber())
+                .pageSize(pagePost.getSize())
+                .totalPages(pagePost.getTotalPages())
+                .totalElements(pagePost.getNumberOfElements())
+                .lastPage(pagePost.isLast())
+                .content(postDtos)
+                .build();
+        return postPaginationResponse;
     }
 
     @Override
