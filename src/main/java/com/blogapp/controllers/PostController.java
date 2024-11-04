@@ -77,9 +77,11 @@ public class PostController {
     @GetMapping("/posts")
     public ResponseEntity<PostPaginationResponse> getPostByPage(
             @RequestParam(value = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
-            @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize
-    )   {
-        PostPaginationResponse paginationResponse = postService.getPostByPagination(pageNumber, pageSize);
+            @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize,
+            @RequestParam(value = "sortBy", defaultValue = "postId", required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = "ascending", required = false) String sortDir
+    ) {
+        PostPaginationResponse paginationResponse = postService.getPostByPagination(pageNumber, pageSize, sortBy, sortDir);
         return new ResponseEntity<>(paginationResponse, HttpStatus.OK);
     }
 

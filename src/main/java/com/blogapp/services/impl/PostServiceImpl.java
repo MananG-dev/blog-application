@@ -15,6 +15,7 @@ import com.blogapp.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -85,8 +86,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostPaginationResponse getPostByPagination(Integer pageNumber, Integer pageSize) {
-        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+    public PostPaginationResponse getPostByPagination(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
+        Sort sortOrder = sortDir.equals("dsc")?Sort.by(sortBy).descending():Sort.by(sortBy).ascending();
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sortOrder);
         Page<Post> pagePost = postRepositories.findAll(pageRequest);
         List<Post> postList = pagePost.getContent();
         List<PostDto> postDtos = postList.stream().map((p) -> this.postToPostDto(p)).toList();
