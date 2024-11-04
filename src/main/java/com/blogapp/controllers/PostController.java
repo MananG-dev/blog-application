@@ -1,5 +1,6 @@
 package com.blogapp.controllers;
 
+import com.blogapp.entities.Post;
 import com.blogapp.payloads.ApiResponse;
 import com.blogapp.payloads.PostDto;
 import com.blogapp.services.impl.PostServiceImpl;
@@ -69,6 +70,16 @@ public class PostController {
     public ResponseEntity<List<PostDto>> getAllPosts()  {
         List<PostDto> list = postService.getAllPost();
         return new ResponseEntity<>(list, HttpStatus.FOUND);
+    }
+
+    //get - get post by page
+    @GetMapping("/posts")
+    public ResponseEntity<List<PostDto>> getPostByPage(
+            @RequestParam(value = "pageNumber", defaultValue = "1", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize
+    )   {
+        List<PostDto> postDtos = postService.getPostByPagination(pageNumber, pageSize);
+        return new ResponseEntity<>(postDtos, HttpStatus.OK);
     }
 
     //get - search post by keyword.

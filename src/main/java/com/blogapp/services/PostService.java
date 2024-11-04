@@ -16,11 +16,12 @@ public interface PostService {
     PostDto getPostById(Integer postId);
     // get all post by category
     List<PostDto> getPostByCategory(Integer categoryId);
-
-    List<PostDto> getAllPost();
-
     // get all post by user
     List<PostDto> getPostByUser(Integer userId);
+    // get all posts
+    List<PostDto> getAllPost();
+    // get posts based on pagination
+    List<PostDto> getPostByPagination(Integer pageNumber, Integer pageSize);
     //search post
     List<PostDto> searchPosts(String keyword);
 }

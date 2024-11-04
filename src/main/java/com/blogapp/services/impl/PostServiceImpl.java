@@ -12,6 +12,8 @@ import com.blogapp.repositories.PostRepositories;
 import com.blogapp.repositories.UserRepository;
 import com.blogapp.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -30,8 +32,8 @@ public class PostServiceImpl implements PostService {
 //    private ModelMapper modelMapper;
     @Override
     public PostDto createPost(PostDto postDto, Integer userId, Integer categoryId) {
-        User user = userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User", "id", userId));
-        Category category = categoryRepository.findById(categoryId).orElseThrow(()->new ResourceNotFoundException("Category", "id", categoryId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
         Post post = this.postDtoToPost(postDto);
         post.setImageName("default.png");
         post.setAddedDate(new Date());
@@ -43,7 +45,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDto updatePost(PostDto postDto, Integer postId) {
-        Post post = postRepositories.findById(postId).orElseThrow(()->new ResourceNotFoundException("Post", "id", postId));
+        Post post = postRepositories.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "id", postId));
         post.setContent(postDto.getContent());
         post.setTitle(postDto.getTitle());
         post = postRepositories.save(post);
@@ -52,24 +54,24 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void deletePost(Integer postId) {
-        Post post = postRepositories.findById(postId).orElseThrow(()->new ResourceNotFoundException("Post", "id", postId));
+        Post post = postRepositories.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "id", postId));
         postRepositories.delete(post);
     }
 
     @Override
     public PostDto getPostById(Integer postId) {
-        Post post = postRepositories.findById(postId).orElseThrow(()->new ResourceNotFoundException("Post", "id", postId));
+        Post post = postRepositories.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "id", postId));
         return this.postToPostDto(post);
     }
 
     @Override
     public List<PostDto> getPostByCategory(Integer categoryId) {
-        Category category = categoryRepository.findById(categoryId).orElseThrow(()-> new ResourceNotFoundException("Category", "id", categoryId));
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId));
         List<Post> post = postRepositories.findByCategory(category);
-        if(post==null)  {
+        if (post == null) {
             throw new ResourceNotFoundException("Post", "category id", categoryId);
         }
-        List<PostDto> postDtos = post.stream().map((p)->this.postToPostDto(p)).toList();
+        List<PostDto> postDtos = post.stream().map((p) -> this.postToPostDto(p)).toList();
         return postDtos;
     }
 
@@ -77,15 +79,24 @@ public class PostServiceImpl implements PostService {
     @Override
     public List<PostDto> getAllPost() {
         List<Post> posts = postRepositories.findAll();
-        List<PostDto> postDtos = posts.stream().map((p)->this.postToPostDto(p)).toList();
+        List<PostDto> postDtos = posts.stream().map((p) -> this.postToPostDto(p)).toList();
+        return postDtos;
+    }
+
+    @Override
+    public List<PostDto> getPostByPagination(Integer pageNumber, Integer pageSize) {
+        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
+        Page<Post> pagePost = postRepositories.findAll(pageRequest);
+        List<Post> postList = pagePost.getContent();
+        List<PostDto> postDtos = postList.stream().map((p) -> this.postToPostDto(p)).toList();
         return postDtos;
     }
 
     @Override
     public List<PostDto> getPostByUser(Integer userId) {
-        User user = userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User", "id", userId));
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
         List<Post> posts = postRepositories.findByUser(user);
-        List<PostDto> postDtos = posts.stream().map((p)->this.postToPostDto(p)).toList();
+        List<PostDto> postDtos = posts.stream().map((p) -> this.postToPostDto(p)).toList();
         return postDtos;
     }
 
@@ -94,13 +105,14 @@ public class PostServiceImpl implements PostService {
         return List.of();
     }
 
-    public Post postDtoToPost(PostDto postDto)  {
+    public Post postDtoToPost(PostDto postDto) {
         Post post = Post.builder()
                 .title(postDto.getTitle())
                 .content(postDto.getContent())
                 .build();
         return post;
     }
+
     public PostDto postToPostDto(Post post) {
         PostDto postDto = PostDto.builder()
                 .postId(post.getPostId())
@@ -113,6 +125,7 @@ public class PostServiceImpl implements PostService {
                 .build();
         return postDto;
     }
+
     public UserDto userToUserDto(User user) {
         UserDto userDto = UserDto.builder().id(user.getId()).name(user.getName()).email(user.getEmail()).password(user.getPassword()).about(user.getAbout()).build();
         return userDto;
