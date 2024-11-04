@@ -87,7 +87,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostPaginationResponse getPostByPagination(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
-        Sort sortOrder = sortDir.equals("dsc")?Sort.by(sortBy).descending():Sort.by(sortBy).ascending();
+        Sort sortOrder = sortDir.equals("dsc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, sortOrder);
         Page<Post> pagePost = postRepositories.findAll(pageRequest);
         List<Post> postList = pagePost.getContent();
@@ -112,8 +112,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> searchPosts(String keyword) {
-        return List.of();
+    public List<PostDto> searchPostByKeyword(String keyword) {
+//        List<PostDto> postDtos
+        List<Post> posts = postRepositories.findByTitleContainingOrContentContaining(keyword, keyword);
+        List<PostDto> postDtos = posts.stream().map((p)->this.postToPostDto(p)).toList();
+        return postDtos;
     }
 
     public Post postDtoToPost(PostDto postDto) {

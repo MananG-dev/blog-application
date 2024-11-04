@@ -23,5 +23,5 @@ public interface PostService {
     // get posts based on pagination
     PostPaginationResponse getPostByPagination(Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
     //search post
-    List<PostDto> searchPosts(String keyword);
+    List<PostDto> searchPostByKeyword(String keyword);
 }
