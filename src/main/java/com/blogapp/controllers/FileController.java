@@ -2,17 +2,19 @@ package com.blogapp.controllers;
 
 import com.blogapp.Services.impl.FileServiceImpl;
 import com.blogapp.payloads.FileResponse;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.StreamUtils;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 @RestController
 @RequestMapping("/file")
@@ -37,5 +39,16 @@ public class FileController {
                 .message("File uploaded successfully")
                 .fileName(fileName)
                 .build(), HttpStatus.OK);
+    }
+
+    @SneakyThrows
+    @GetMapping(value = "/download", produces = MediaType.IMAGE_JPEG_VALUE)
+    public void downloadImage(
+            @RequestParam(name="image") String fileName,
+            HttpServletResponse httpServletResponse
+    )   {
+        InputStream is = fileService.getImage(path, fileName);
+        httpServletResponse.setContentType(MediaType.IMAGE_JPEG_VALUE);
+        StreamUtils.copy(is, httpServletResponse.getOutputStream());
     }
 }

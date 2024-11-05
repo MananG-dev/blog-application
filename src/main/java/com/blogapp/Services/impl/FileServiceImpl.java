@@ -6,8 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.blogapp.Services.FileService;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -32,6 +31,18 @@ public class FileServiceImpl implements FileService{
         Files.copy(file.getInputStream(), Path.of(filePath));
         return fileName;
 
+    }
+
+    @Override
+    public InputStream getImage(String path, String fileName) {
+        String filePath = path + File.separator + fileName;
+        InputStream is = null;
+        try {
+            is = new FileInputStream(filePath);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return is;
     }
 
 }
