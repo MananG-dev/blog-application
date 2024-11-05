@@ -1,10 +1,10 @@
 package com.blogapp.controllers;
 
-import com.blogapp.entities.Post;
 import com.blogapp.payloads.ApiResponse;
 import com.blogapp.payloads.PostDto;
 import com.blogapp.payloads.PostPaginationResponse;
 import com.blogapp.services.impl.PostServiceImpl;
+import com.blogapp.utils.AppConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,27 +21,28 @@ public class PostController {
 
     //post - create
     @PostMapping("/u/{userId}/c/{categoryId}")
-    public ResponseEntity<PostDto > createPost(@RequestBody PostDto postDto, @PathVariable(name="userId") Integer userId, @PathVariable(name="categoryId") Integer categoryId)    {
+    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto, @PathVariable(name = "userId") Integer userId, @PathVariable(name = "categoryId") Integer categoryId) {
         PostDto postCreated = postService.createPost(postDto, userId, categoryId);
         return new ResponseEntity<>(postCreated, HttpStatus.CREATED);
     }
+
     //put - update
     @PutMapping("/{postId}")
-    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto,  @PathVariable(name="") Integer postId)   {
-        PostDto updatedPost = postService.updatePost(postDto,postId);
+    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable(name = "") Integer postId) {
+        PostDto updatedPost = postService.updatePost(postDto, postId);
         return new ResponseEntity<PostDto>(updatedPost, HttpStatus.ACCEPTED);
     }
 
     //get - get by post id
     @GetMapping("/{postId}")
-    public ResponseEntity<PostDto> getPost(@PathVariable(name="postId") Integer postId) {
+    public ResponseEntity<PostDto> getPost(@PathVariable(name = "postId") Integer postId) {
         PostDto postDto = postService.getPostById(postId);
         return new ResponseEntity<>(postDto, HttpStatus.FOUND);
     }
 
     //delete
     @DeleteMapping("/{postId}")
-    public ResponseEntity<ApiResponse> deletePost(@PathVariable(name="postId") Integer postId)   {
+    public ResponseEntity<ApiResponse> deletePost(@PathVariable(name = "postId") Integer postId) {
         postService.deletePost(postId);
         ApiResponse apiResponse = ApiResponse.builder()
                 .message("Post deleted successfully")
@@ -54,21 +55,21 @@ public class PostController {
 
     //get - get all post by category id
     @GetMapping("/c/{categoryId}")
-    public ResponseEntity<List<PostDto>> getPostByCategoryId(@PathVariable(name="categoryId") Integer categoryId) {
+    public ResponseEntity<List<PostDto>> getPostByCategoryId(@PathVariable(name = "categoryId") Integer categoryId) {
         List<PostDto> postDtos = postService.getPostByCategory(categoryId);
         return new ResponseEntity<>(postDtos, HttpStatus.FOUND);
     }
 
     //get - get all post by user id
     @GetMapping("/u/{userId}")
-    public ResponseEntity<List<PostDto>> getPostByUserId(@PathVariable(name="userId") Integer userId) {
+    public ResponseEntity<List<PostDto>> getPostByUserId(@PathVariable(name = "userId") Integer userId) {
         List<PostDto> postDtos = postService.getPostByUser(userId);
         return new ResponseEntity<>(postDtos, HttpStatus.FOUND);
     }
 
     //get - get all posts
     @GetMapping("/")
-    public ResponseEntity<List<PostDto>> getAllPosts()  {
+    public ResponseEntity<List<PostDto>> getAllPosts() {
         List<PostDto> list = postService.getAllPost();
         return new ResponseEntity<>(list, HttpStatus.FOUND);
     }
@@ -76,18 +77,18 @@ public class PostController {
     //get - get post by page
     @GetMapping("/posts")
     public ResponseEntity<PostPaginationResponse> getPostByPage(
-            @RequestParam(value = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
-            @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize,
-            @RequestParam(value = "sortBy", defaultValue = "postId", required = false) String sortBy,
-            @RequestParam(value = "sortDir", defaultValue = "ascending", required = false) String sortDir
+            @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(value = "sortBy", defaultValue = AppConstants.SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_DIR, required = false) String sortDir
     ) {
         PostPaginationResponse paginationResponse = postService.getPostByPagination(pageNumber, pageSize, sortBy, sortDir);
         return new ResponseEntity<>(paginationResponse, HttpStatus.OK);
     }
 
     //get - search post by keyword.
-    @GetMapping("/post/search/{keyword}")
-    public ResponseEntity<List<PostDto>> searchPostByKeyword(@PathVariable(name="keyword") String keyword)  {
+    @GetMapping("/search/{keyword}")
+    public ResponseEntity<List<PostDto>> searchPostByKeyword(@PathVariable(name = "keyword") String keyword) {
         List<PostDto> postDtos = postService.searchPostByKeyword(keyword);
         return new ResponseEntity<>(postDtos, HttpStatus.FOUND);
     }
