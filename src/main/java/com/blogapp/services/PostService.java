@@ -12,7 +12,7 @@ public interface PostService {
     PostDto updatePost(PostDto postDto, Integer postId);
     //delete
     void deletePost(Integer postId);
-    // get
+    // get post by post id
     PostDto getPostById(Integer postId);
     // get all post by category
     List<PostDto> getPostByCategory(Integer categoryId);

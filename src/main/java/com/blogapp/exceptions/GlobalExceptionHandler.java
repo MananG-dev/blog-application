@@ -32,4 +32,15 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(resp, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ApiResponse> runtimeExceptionHandler(RuntimeException e)  {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(e.getMessage())
+                .status(false)
+                .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                .localDateTime(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }

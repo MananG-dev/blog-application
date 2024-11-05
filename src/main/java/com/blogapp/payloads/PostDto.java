@@ -2,10 +2,7 @@ package com.blogapp.payloads;
 
 import com.blogapp.entities.Category;
 import com.blogapp.entities.User;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 
@@ -13,6 +10,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 @Getter
+@Setter
 public class PostDto {
     private Integer postId;
     private String title;

@@ -1,15 +1,25 @@
 package com.blogapp.controllers;
 
 import com.blogapp.payloads.ApiResponse;
+import com.blogapp.payloads.ImageResponse;
 import com.blogapp.payloads.PostDto;
 import com.blogapp.payloads.PostPaginationResponse;
+import com.blogapp.services.FileService;
+import com.blogapp.services.impl.FileServiceImpl;
 import com.blogapp.services.impl.PostServiceImpl;
 import com.blogapp.utils.AppConstants;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,6 +28,10 @@ import java.util.List;
 public class PostController {
     @Autowired
     private PostServiceImpl postService;
+    @Autowired
+    private FileServiceImpl fileService;
+    @Value("${project.imageDirectory}")
+    private String path;
 
     //post - create
     @PostMapping("/u/{userId}/c/{categoryId}")
@@ -35,7 +49,7 @@ public class PostController {
 
     //get - get by post id
     @GetMapping("/{postId}")
-    public ResponseEntity<PostDto> getPost(@PathVariable(name = "postId") Integer postId) {
+    public ResponseEntity<PostDto> getPostByPostId(@PathVariable(name = "postId") Integer postId) {
         PostDto postDto = postService.getPostById(postId);
         return new ResponseEntity<>(postDto, HttpStatus.FOUND);
     }
@@ -91,5 +105,35 @@ public class PostController {
     public ResponseEntity<List<PostDto>> searchPostByKeyword(@PathVariable(name = "keyword") String keyword) {
         List<PostDto> postDtos = postService.searchPostByKeyword(keyword);
         return new ResponseEntity<>(postDtos, HttpStatus.FOUND);
+    }
+
+    //post image upload
+    @PostMapping("/post/image/upload/{postId}")
+    public ResponseEntity<ImageResponse> uploadImage(
+            @PathVariable(name="postId") Integer postId,
+            @RequestParam("image") MultipartFile file
+            )   {
+        String fileName = fileService.uploadFile(path, file);
+        PostDto postDto = postService.getPostById(postId);
+        postDto.setImageName(fileName);
+        postDto = postService.updatePost(postDto, postId);
+        ImageResponse imageResponse = ImageResponse.builder()
+                .fileName(fileName)
+                .status(true)
+                .postDto(postDto)
+                .message("Successfully uploaded")
+                .build();
+        return new ResponseEntity<>(imageResponse, HttpStatus.ACCEPTED);
+    }
+
+    //download image
+    @GetMapping(value = "/download/{postId}", produces = MediaType.ALL_VALUE)
+    public void downloadImage(@PathVariable(name="postId") Integer postId, HttpServletResponse httpServletResponse) throws IOException {
+        PostDto postDto = postService.getPostById(postId);
+        String fileName = postDto.getImageName();
+        System.out.println(fileName);
+        InputStream in = fileService.downloadFile(path, fileName);
+        httpServletResponse.setContentType(MediaType.ALL_VALUE);
+        StreamUtils.copy(in, httpServletResponse.getOutputStream());
     }
 }

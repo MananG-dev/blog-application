@@ -50,6 +50,7 @@ public class PostServiceImpl implements PostService {
         Post post = postRepositories.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "id", postId));
         post.setContent(postDto.getContent());
         post.setTitle(postDto.getTitle());
+        post.setImageName(postDto.getImageName());
         post = postRepositories.save(post);
         return this.postToPostDto(post);
     }
@@ -62,7 +63,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDto getPostById(Integer postId) {
-        Post post = postRepositories.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "id", postId));
+        Post post = postRepositories.findById(Integer.valueOf(postId)).orElseThrow(() -> new ResourceNotFoundException("Post", "id", postId));
         return this.postToPostDto(post);
     }
 
