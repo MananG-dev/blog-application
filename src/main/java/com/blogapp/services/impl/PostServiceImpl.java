@@ -1,14 +1,13 @@
 package com.blogapp.services.impl;
 
 import com.blogapp.entities.Category;
+import com.blogapp.entities.Comment;
 import com.blogapp.entities.Post;
 import com.blogapp.entities.User;
 import com.blogapp.exceptions.ResourceNotFoundException;
-import com.blogapp.payloads.CategoryDto;
-import com.blogapp.payloads.PostDto;
-import com.blogapp.payloads.PostPaginationResponse;
-import com.blogapp.payloads.UserDto;
+import com.blogapp.payloads.*;
 import com.blogapp.repositories.CategoryRepository;
+import com.blogapp.repositories.CommentRepository;
 import com.blogapp.repositories.PostRepositories;
 import com.blogapp.repositories.UserRepository;
 import com.blogapp.services.PostService;
@@ -20,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -29,6 +29,8 @@ public class PostServiceImpl implements PostService {
     private UserRepository userRepository;
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private CommentServiceImpl commentService;
 
     //    @Autowired
 //    private ModelMapper modelMapper;
@@ -64,7 +66,10 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDto getPostById(Integer postId) {
         Post post = postRepositories.findById(Integer.valueOf(postId)).orElseThrow(() -> new ResourceNotFoundException("Post", "id", postId));
-        return this.postToPostDto(post);
+        Set<CommentDto> comments = commentService.getAllCommentsOfPost(post.getPostId());
+        PostDto postDto = postToPostDto(post);
+        postDto.setCommentDto(comments);
+        return postDto;
     }
 
     @Override
@@ -140,7 +145,13 @@ public class PostServiceImpl implements PostService {
                 .build();
         return postDto;
     }
-
+    public CommentDto commentToCommentDto(Comment comment)  {
+        CommentDto commentDto = CommentDto.builder()
+                .commentId(comment.getCommentId())
+                .commentContent(comment.getCommentContent())
+                .build();
+        return commentDto;
+    }
     public UserDto userToUserDto(User user) {
         UserDto userDto = UserDto.builder().id(user.getId()).name(user.getName()).email(user.getEmail()).password(user.getPassword()).about(user.getAbout()).build();
         return userDto;

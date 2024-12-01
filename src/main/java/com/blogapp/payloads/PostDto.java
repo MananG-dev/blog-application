@@ -5,6 +5,7 @@ import com.blogapp.entities.User;
 import lombok.*;
 
 import java.util.Date;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,4 +20,5 @@ public class PostDto {
     private Date addedDate;
     private UserDto user;
     private CategoryDto category;
+    private Set<CommentDto> commentDto;
 }
