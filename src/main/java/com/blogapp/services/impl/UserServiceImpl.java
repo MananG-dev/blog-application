@@ -5,6 +5,7 @@ import com.blogapp.exceptions.ResourceNotFoundException;
 import com.blogapp.payloads.UserDto;
 import com.blogapp.repositories.UserRepository;
 import com.blogapp.services.UserService;
+import com.blogapp.utils.UserServiceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto userDto) {
+        userDto.setPassword(UserServiceUtil.hashPassword(userDto.getPassword()));
         User user = this.userDtoToUser(userDto);
         User savedUser = userRepository.save(user);
         return this.userToUserDto(savedUser);
@@ -27,7 +29,7 @@ public class UserServiceImpl implements UserService {
         User foundUser = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "userId", userId));
         foundUser.setName(userDto.getName());
         foundUser.setEmail(userDto.getEmail());
-        foundUser.setPassword(userDto.getPassword());
+        foundUser.setPassword(UserServiceUtil.hashPassword(userDto.getPassword()));
         foundUser.setAbout(userDto.getAbout());
         User updatedUser = userRepository.save(foundUser);
         return this.userToUserDto(updatedUser);

@@ -7,8 +7,8 @@ public class ResourceNotFoundException extends RuntimeException{
 
     public ResourceNotFoundException(String source, String field, Object data)  {
         super(source + " not found with " + field + ": " + data.toString());
-        this.resourceName = resourceName;
-        this.fieldName = fieldName;
-        this.fieldValue = fieldValue;
+        this.resourceName = source;
+        this.fieldName = field;
+        this.fieldValue = data;
     }
 }

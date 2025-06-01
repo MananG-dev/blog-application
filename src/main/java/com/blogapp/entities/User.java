@@ -2,8 +2,13 @@ package com.blogapp.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name="users")
@@ -12,7 +17,7 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -29,4 +34,29 @@ public class User {
     private List<Post> post;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Comment> comments;
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name="user_role",
+    joinColumns = @JoinColumn(name="user_id", referencedColumnName = "id"),
+    inverseJoinColumns = @JoinColumn(name="role_id", referencedColumnName = "roleId"))
+    private Set<Roles> roles = new HashSet<>();
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        this.roles.forEach(role -> {
+            authorities.add(new GrantedAuthority() {
+                @Override
+                public String getAuthority() {
+                    return role.getRoleName();
+                }
+            });
+        });
+        return authorities;
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email;
+    }
 }
