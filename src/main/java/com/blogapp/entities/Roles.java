@@ -7,10 +7,12 @@ import java.util.List;
 
 @Entity(name = "Roles")
 @Table(name = "roles")
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
+@Builder
 public class Roles {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer roleId;
     private String roleName;
 }
