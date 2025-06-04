@@ -35,7 +35,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // Disable CSRF protection for simplicity
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/v1/auth/login").permitAll() // Allow public access to login and register endpoints
+                        .requestMatchers("/api/v1/auth/**").permitAll() // Allow public access to login and register endpoints
                         .requestMatchers(HttpMethod.GET).permitAll()    // Allow public access to all GET requests
                         .anyRequest().authenticated()) // All other requests require authentication
                 .exceptionHandling((exception) -> exception.authenticationEntryPoint(this.jwtAuthenticationEntryPoint))

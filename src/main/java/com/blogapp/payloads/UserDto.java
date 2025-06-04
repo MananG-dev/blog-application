@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.Set;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -27,4 +29,5 @@ public class UserDto {
     private String password;
     @NotNull
     private String about;
+    private Set<RoleDto> roles; // List of roles assigned to the user
 }

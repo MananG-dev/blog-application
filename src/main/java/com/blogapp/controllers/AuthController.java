@@ -2,8 +2,10 @@ package com.blogapp.controllers;
 
 import com.blogapp.payloads.JwtAuthRequest;
 import com.blogapp.payloads.JwtAuthResponse;
+import com.blogapp.payloads.UserDto;
 import com.blogapp.security.CustomUserDetailService;
 import com.blogapp.security.JwtTokenHelper;
+import com.blogapp.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,8 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
     @Autowired
     private CustomUserDetailService customUserDetailService;
+    @Autowired
+    private UserServiceImpl userService;
 
     @PostMapping("/login")
     public ResponseEntity<JwtAuthResponse> createToken(@RequestBody JwtAuthRequest jwtAuthRequest) {
@@ -42,6 +46,12 @@ public class AuthController {
         jwtAuthResponse.setAccessToken(token);
         return new ResponseEntity<JwtAuthResponse>(jwtAuthResponse, HttpStatus.OK);
      }
+
+    @PostMapping("/register")
+    public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto) {
+        UserDto userDto1 = userService.registerNewUser(userDto);
+        return new ResponseEntity<>(userDto1, HttpStatus.CREATED);
+    }
 
     private void authenticate(String username, String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
