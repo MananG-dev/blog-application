@@ -50,7 +50,7 @@ public class AuthController {
         } catch(DisabledException e) {
             throw new RuntimeException("User is disabled");
         } catch(BadCredentialsException e) {
-            throw new RuntimeException("Bad credentials");
+            throw new BadCredentialsException("Invalid Username or password");
         } catch (Exception e) {
             throw new RuntimeException("Invalid credentials");
         }
