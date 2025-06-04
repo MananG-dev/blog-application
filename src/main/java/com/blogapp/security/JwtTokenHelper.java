@@ -17,16 +17,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import static com.blogapp.utils.AppConstants.BASE64_SECRET;
+
 @Component
 public class JwtTokenHelper {
     public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 1000; // 5 minutes
-    //    private String secret = "jwtTokenKey";
-    String base64Secret = "Qs7Z3fV7O0NxY6PfZn5j8TXyVH/1K5WTqAv9uHzrXH8=";
+    String base64Secret = BASE64_SECRET; // Replace with your actual base64 secret key
     byte[] keyBytes = Decoders.BASE64.decode(base64Secret);
     SecretKey key = Keys.hmacShaKeyFor(keyBytes);
-
-//    @Autowired
-//    private UserDetails userDetails;
 
     @Autowired
     private CustomUserDetailService customUserDetailService;
@@ -60,10 +58,9 @@ public class JwtTokenHelper {
     //generate token for user
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
-        System.out.println("[JwtTokenHelper] Generating token for user: " + username);
         UserDetails userDetails = customUserDetailService.loadUserByUsername(username);
         Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
-        System.out.println("[JwtTokenHelper] User roles: " + authorities);
+        System.out.println("[JwtTokenHelper] Generating token for user: " + username);
         claims.put("roles", authorities);
         return doGenerateToken(claims, username);
     }

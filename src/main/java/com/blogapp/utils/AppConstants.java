@@ -8,4 +8,5 @@ public class AppConstants {
 
     public static final String Authorization = "Authorization";
     public static final String Bearer = "Bearer";
+    public static final String BASE64_SECRET = "Qs7Z3fV7O0NxY6PfZn5j8TXyVH/1K5WTqAv9uHzrXH8=";
 }
