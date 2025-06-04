@@ -2,6 +2,7 @@ package com.blogapp.controllers;
 
 import com.blogapp.payloads.JwtAuthRequest;
 import com.blogapp.payloads.JwtAuthResponse;
+import com.blogapp.security.CustomUserDetailService;
 import com.blogapp.security.JwtTokenHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,12 +27,16 @@ public class AuthController {
     private UserDetailsService userDetailsService;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private CustomUserDetailService customUserDetailService;
 
     @PostMapping("/login")
     public ResponseEntity<JwtAuthResponse> createToken(@RequestBody JwtAuthRequest jwtAuthRequest) {
         this.authenticate(jwtAuthRequest.getUsername(), jwtAuthRequest.getPassword());
-        UserDetails userDetails = this.userDetailsService.loadUserByUsername(jwtAuthRequest.getUsername());
-        String token = this.jwtTokenHelper.generateToken(userDetails.getUsername());
+        System.out.println("[AuthController] Authenticating user: " + jwtAuthRequest.getUsername());
+        UserDetails userDetails = this.customUserDetailService.loadUserByUsername(jwtAuthRequest.getUsername());
+        System.out.println("[AuthController] User details loaded: " + userDetails.getUsername() + " with authorities: " + userDetails.getAuthorities());
+        String token = this.jwtTokenHelper.generateToken(jwtAuthRequest.getUsername());
         System.out.println("Generated JWT Token: " + token);
         JwtAuthResponse jwtAuthResponse = new JwtAuthResponse();
         jwtAuthResponse.setAccessToken(token);

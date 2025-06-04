@@ -1,5 +1,6 @@
 package com.blogapp.payloads;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -22,6 +23,7 @@ public class UserDto {
     @NotEmpty(message = "Password must not be null and empty")
     @Size(min = 3, max = 10, message = "Password must be of atleast 3 and maximum of 10 size")
 //    @Pattern(regexp = )
+    @JsonIgnoreProperties(value = {"password"}, allowGetters = true, allowSetters = false)
     private String password;
     @NotNull
     private String about;

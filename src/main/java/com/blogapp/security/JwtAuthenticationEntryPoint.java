@@ -19,6 +19,5 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType("application/json");
         response.getWriter().write("{\"error\": \"Unauthorized\"}");
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access Denied: Unauthorized");
-        // Optionally, you can log the exception or perform other actions here
     }
 }

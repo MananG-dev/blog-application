@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -46,9 +47,12 @@ public class UserController {
         return new ResponseEntity<>(userDtos, HttpStatus.OK);
     }
 
+    // ADMIN
     // DELETE - delete user
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     @DeleteMapping("/{userID}")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable(name = "userID") Integer uid) {
+        System.out.println("[UserController] Deleting user with ID: " + uid);
         userService.deleteUser(uid);
         ApiResponse apiResponse = ApiResponse.builder()
                 .message("User Deleted Successfully")

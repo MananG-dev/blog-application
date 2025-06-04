@@ -6,10 +6,12 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,8 +25,11 @@ public class JwtTokenHelper {
     byte[] keyBytes = Decoders.BASE64.decode(base64Secret);
     SecretKey key = Keys.hmacShaKeyFor(keyBytes);
 
+//    @Autowired
+//    private UserDetails userDetails;
+
     @Autowired
-    private UserDetails userDetails;
+    private CustomUserDetailService customUserDetailService;
 
     public String getUsernameFromToken(String token) {
         // Logic to extract username from JWT token
@@ -55,6 +60,11 @@ public class JwtTokenHelper {
     //generate token for user
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
+        System.out.println("[JwtTokenHelper] Generating token for user: " + username);
+        UserDetails userDetails = customUserDetailService.loadUserByUsername(username);
+        Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
+        System.out.println("[JwtTokenHelper] User roles: " + authorities);
+        claims.put("roles", authorities);
         return doGenerateToken(claims, username);
     }
 
