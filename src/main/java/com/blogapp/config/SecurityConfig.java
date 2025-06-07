@@ -17,9 +17,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
+import static com.blogapp.utils.AppConstants.PUBLIC_URLS;
 
 @Configuration
 @EnableWebSecurity
+@EnableWebMvc
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
     @Autowired
@@ -35,8 +39,9 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // Disable CSRF protection for simplicity
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/v1/auth/**").permitAll() // Allow public access to login and register endpoints
-                        .requestMatchers(HttpMethod.GET).permitAll()    // Allow public access to all GET requests
+                        .requestMatchers(PUBLIC_URLS).permitAll()
+                        // Allow public access to all GET requests
+                        .requestMatchers(HttpMethod.GET).permitAll()
                         .anyRequest().authenticated()) // All other requests require authentication
                 .exceptionHandling((exception) -> exception.authenticationEntryPoint(this.jwtAuthenticationEntryPoint))
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
